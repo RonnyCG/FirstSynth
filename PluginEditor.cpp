@@ -14,14 +14,15 @@
 
 //==============================================================================
 FirstSynthAudioProcessorEditor::FirstSynthAudioProcessorEditor (FirstSynthAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), oscGUI(p), envGUI(p)
+    : AudioProcessorEditor (&p), processor (p), oscGUI(p), envGUI(p), filterGUI(p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 200);
+    setSize (600, 200);
 
 	addAndMakeVisible(&oscGUI);
 	addAndMakeVisible(&envGUI);
+	addAndMakeVisible(&filterGUI);
 }
 
 FirstSynthAudioProcessorEditor::~FirstSynthAudioProcessorEditor()
@@ -47,7 +48,9 @@ void FirstSynthAudioProcessorEditor::resized()
 	const int componentHeigth = 200;
 
 	oscGUI.setBounds(area.removeFromLeft(componentWidth).removeFromTop(componentHeigth));
+	filterGUI.setBounds(area.removeFromLeft(componentWidth).removeFromTop(componentHeigth));
 	envGUI.setBounds(area.removeFromLeft(componentWidth).removeFromTop(componentHeigth));//revisar!!!
+
 	 
 }
 

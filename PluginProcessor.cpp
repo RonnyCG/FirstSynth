@@ -28,12 +28,12 @@ FirstSynthAudioProcessor::FirstSynthAudioProcessor()
 {
 	//ADSR Sliders
 	//===================================================================================================
-	NormalisableRange<float> attackParam(50.f, 5000.0f);
+	NormalisableRange<float> attackParam(50.f, 5000.0f); //miliseconds
 	NormalisableRange<float> decayParam(50.0f, 5000.0f);
 	NormalisableRange<float> sustainParam(0.0f, 1.0f);
 	NormalisableRange<float> releaseParam(50.0f, 5000.0f);
 
-	tree.createAndAddParameter("attack", "Attack", "Attack", attackParam, 100.0f, nullptr, nullptr);
+	tree.createAndAddParameter("attack", "Attack", "Attack", attackParam, 100.0f, nullptr, nullptr); //default value 100.0f
 	tree.createAndAddParameter("decay", "Decay", "Decay", decayParam, 100.0f, nullptr, nullptr);
 	tree.createAndAddParameter("sustain", "Sustain", "Sustain", sustainParam, 1.0f, nullptr, nullptr);
 	tree.createAndAddParameter("release", "Release", "Release", releaseParam, 100.0f, nullptr, nullptr);
@@ -42,8 +42,19 @@ FirstSynthAudioProcessor::FirstSynthAudioProcessor()
 
 	//OSC ComboBox
 	//==========================================================================================
-	NormalisableRange<float> wavetypeParam(0, 2);
+	NormalisableRange<float> wavetypeParam(0, 2); //seleccion de combo Box
 	tree.createAndAddParameter("wavetype","WaveType","WaveType",wavetypeParam,0,nullptr, nullptr);
+	//==========================================================================================
+
+
+	//FILTER sliders and comboBox
+	//==========================================================================================
+	NormalisableRange<float> filterVal(20.0f, 10000.0f); //Hz
+	tree.createAndAddParameter("filterCutOff", "FilterCutOff", "filterCutOff",filterVal , 400.0f, nullptr, nullptr);
+	NormalisableRange<float> resVal(20.0f, 10000.0f); //Hz
+	tree.createAndAddParameter("filterResonance", "FilterResonance", "filterResonance", resVal, 1, nullptr, nullptr);
+	NormalisableRange<float> filterTypeVal(0, 2); //seleccion de combo Box
+	tree.createAndAddParameter("filterType", "FilterType", "filterType", filterTypeVal, 0, nullptr, nullptr);
 	//==========================================================================================
 
 	tree.state = ValueTree("Foo");
@@ -181,6 +192,11 @@ void FirstSynthAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
 										tree.getRawParameterValue("release"));
 
 			myVoice->getOscType(tree.getRawParameterValue("wavetype"));		//Osc ComboBox
+
+			myVoice->getFilterParams(tree.getRawParameterValue("filterType"),
+										tree.getRawParameterValue("filterCutOff"),
+										tree.getRawParameterValue("filterResonance"));
+
 		}
 	}
 

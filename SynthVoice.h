@@ -23,17 +23,6 @@ public:
 
 	//=========================================
 
-	void getEnvelopeParams(float* attack, float* decay, float* sustain, float* release)
-	{
-
-		env1.setAttack(double(*attack));
-		env1.setDecay(double(*decay));
-		env1.setSustain(double(*sustain));
-		env1.setRelease(double(*release));
-	}
-
-	//=========================================
-
 	void getOscType(float* selection)
 	{
 		theWave = *selection;//numero de seleccion del comboBox
@@ -61,6 +50,53 @@ public:
 		}
 		
 	}
+	//=========================================
+
+	void getEnvelopeParams(float* attack, float* decay, float* sustain, float* release)
+	{
+
+		env1.setAttack(double(*attack));
+		env1.setDecay(double(*decay));
+		env1.setSustain(double(*sustain));
+		env1.setRelease(double(*release));
+	}
+	//=========================================
+
+	double setEnvelopeParams()
+	{
+		return env1.adsr(setOscType(), env1.trigger);
+	}
+	//=========================================
+
+	void getFilterParams(float* filterType, float* filterVal, float* filterRes)
+	{
+		filterChoice = *filterType;
+		cutOff = *filterVal;
+		resonance = *filterRes;
+	}
+
+	//=========================================
+
+	double setFilter()
+	{
+		if (filterChoice == 0)
+		{
+			return filter1.lores(setEnvelopeParams(), cutOff, resonance);
+		}
+		else if (filterChoice == 1)
+		{
+			return filter1.hires(setEnvelopeParams(), cutOff, resonance);
+		}
+		else if (filterChoice == 2)
+		{
+			return filter1.bandpass(setEnvelopeParams(), cutOff, resonance);
+		}
+		else
+		{
+			return filter1.lores(setEnvelopeParams(), cutOff, resonance);
+		}
+	}
+
 	//=========================================
 
 	void startNote(int midiNoteNumber, float velocity, SynthesiserSound* sound, int currentPitchWheelPosition)
@@ -106,10 +142,12 @@ public:
 		{
 			//double theWave = osc1.sinewave(frequency);
 
-			double theSound = env1.adsr(setOscType(), env1.trigger) * level;
+			//double theSound = env1.adsr(setOscType(), env1.trigger) * level;
+
+
 			for (int channel = 0; channel < outputBuffer.getNumChannels(); channel++)
 			{
-				outputBuffer.addSample(channel, startSample, theSound);
+				outputBuffer.addSample(channel, startSample, /*theSound*/ setFilter()*level);
 			}
 
 			startSample++;
@@ -123,8 +161,15 @@ private:
 	double frequency;
 	int theWave;
 
+	//Filtro
+	int filterChoice;
+	float cutOff;
+	float resonance;
+	//===============
+
 	maxiOsc osc1;
 	maxiEnv env1;
+	maxiFilter filter1;
 
 	int test;
 };
